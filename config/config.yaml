@@ -1,0 +1,60 @@
+# infra options
+devices: '1'
+gpus: 1
+workers: 8 # I recommend tuning this parameter for faster data augmentation processing
+dataset_dir: "../WWWv2/data"
+
+# train options
+seed: 42
+batch_size: 48
+max_epochs: 300
+dataset: "magnatagatune" # ["magnatagatune", "gtzan"]
+supervised: 0 # train with supervised baseline
+clips_num: 462
+n_heads: 3
+transformer_encoder_layers: 3
+label_factor: 1.0
+
+# mask options
+masked_factor: 0.1
+mask_weight: 0.0
+encoder_channels: 128
+projection_dim: 256 # Projection dim. of SimCLR projector
+encoder_dim: 512
+
+# loss options
+optimizer: "Adam" # or LARS (experimental)
+learning_rate: 0.0003
+weight_decay: 1.0e-6 # "optimized using LARS [...] and weight decay of 10−6"
+temperature: 0.5 # see appendix B.7.: Optimal temperature under different batch sizes
+
+# reload options
+checkpoint_path: "" # set to the directory containing `checkpoint_##.tar`
+
+# logistic regression options
+finetuner_mlp: 0
+finetuner_checkpoint_path: ""
+finetuner_max_epochs: 300
+finetuner_batch_size: 64
+finetuner_learning_rate: 0.001
+
+#hyperparameters of mel-spectrogram
+hop_size: 128
+n_mels: 128
+n_fft: 256
+
+# audio data augmentation options
+audio_length: 59049
+sample_rate: 16000
+transforms_polarity: 0.8
+transforms_noise: 0.01
+transforms_gain: 0.3
+transforms_filters: 0.8
+transforms_delay: 0.3
+transforms_pitch: 0.6
+transforms_reverb: 0.6
+
+#loss
+lambd1: 5.0e-3
+lambd2: 5.0e-3
+
