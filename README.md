@@ -1,4 +1,4 @@
-# Contrastive Learning Adopting Positive-Negative Frame Mask for Music Representation
+# Contrastive Learning with Positive-Negative Frame Mask for Music Representation
 PyTorch implementation  
 
 ## Detail about dataset folder
