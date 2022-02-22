@@ -1,25 +1,22 @@
-import argparse
-from torch.utils.data import DataLoader
-import pytorch_lightning as pl
-from pytorch_lightning import Trainer
-from pytorch_lightning.loggers import TensorBoardLogger
-from pemr.models import Architecture
-# Audio Augmentations
-from torchaudio_augmentations import (
-    RandomApply,
-    ComposeMany,
-    RandomResizedCrop,
-    PolarityInversion,
-    Noise,
-    Gain,
-    HighLowPass,
-    Delay,
-    Reverb,
-)
 import os
-from pemr.data import ContrastiveDataset
+import argparse
+import pytorch_lightning as pl
+from torch.utils.data import DataLoader
+from torchaudio_augmentations import Compose, RandomResizedCrop
+from pytorch_lightning import Trainer
+from pytorch_lightning.callbacks import EarlyStopping
+from pytorch_lightning.loggers import TensorBoardLogger
+
+
 from pemr.datasets import get_dataset
-from pemr.modules import ContrastiveLearning
+from pemr.data import ContrastiveDataset
+from pemr.evaluation import evaluate
+from pemr.modules import ContrastiveLearning, LinearEvaluation, Finetuner
+from pemr.utils import (
+    load_encoder_checkpoint,
+    load_finetuner_checkpoint,
+)
+from pemr.models import Architecture
 
 # configuration
 # -----------------------------------------------------------------------------------------------------------
@@ -74,84 +71,118 @@ parser.add_argument('--n_mels', type=int, default=128)
 parser.add_argument('--n_fft', type=int, default=256)
 # ----------------------------------------------------------------------------------------------------
 
-
-
 if __name__ == "__main__":
     args = parser.parse_args()
     pl.seed_everything(args.seed)
-    os.environ["CUDA_VISIBLE_DEVICES"] = args.devices
-    # data augmentations
-    train_transform = [
-        RandomResizedCrop(n_samples=args.segment_length),
-        RandomApply([PolarityInversion()], p=args.polarity),
-        RandomApply([Noise()], p=args.noise),
-        RandomApply([Gain()], p=args.gain),
-        RandomApply(
-            [HighLowPass(sample_rate=args.sample_rate)], p=args.filters
-        ),
-        RandomApply([Delay(sample_rate=args.sample_rate)], p=args.delay),
-        RandomApply(
-            [Reverb(sample_rate=args.sample_rate)], p=args.reverb
-        ),
-    ]
-    num_augmented_samples = 2
+    args.accelerator = None
 
+    if not os.path.exists(args.checkpoint_path):
+        raise FileNotFoundError("That checkpoint does not exist")
+
+    train_transform = [RandomResizedCrop(n_samples=args.segment_length)]
+    os.environ["CUDA_VISIBLE_DEVICES"] = args.devices
+    # ------------
     # dataloaders
+    # ------------
     train_dataset = get_dataset(args.dataset, args.dataset_dir, args.label_factor, subset="train")
     valid_dataset = get_dataset(args.dataset, args.dataset_dir, args.label_factor, subset="valid")
+    test_dataset = get_dataset(args.dataset, args.dataset_dir, args.label_factor, subset="test")
+
     contrastive_train_dataset = ContrastiveDataset(
         train_dataset,
         input_shape=(1, args.segment_length),
-        transform=ComposeMany(
-            train_transform, num_augmented_samples=num_augmented_samples
-        ),
+        transform=Compose(train_transform),
     )
 
     contrastive_valid_dataset = ContrastiveDataset(
         valid_dataset,
         input_shape=(1, args.segment_length),
-        transform=ComposeMany(
-            train_transform, num_augmented_samples=num_augmented_samples
-        ),
+        transform=Compose(train_transform),
+    )
+
+    contrastive_test_dataset = ContrastiveDataset(
+        test_dataset,
+        input_shape=(1, args.segment_length),
+        transform=None,
     )
 
     train_loader = DataLoader(
         contrastive_train_dataset,
-        batch_size=args.batch_size,
-        num_workers=args.num_workers,
-        drop_last=True,
+        batch_size=args.finetuner_batch_size,
+        num_workers=args.workers,
         shuffle=True,
     )
 
     valid_loader = DataLoader(
         contrastive_valid_dataset,
-        batch_size=args.batch_size,
-        num_workers=args.num_workers,
-        drop_last=True,
+        batch_size=args.finetuner_batch_size,
+        num_workers=args.workers,
         shuffle=False,
     )
 
-    # architecture
+    test_loader = DataLoader(
+        contrastive_test_dataset,
+        batch_size=args.finetuner_batch_size,
+        num_workers=args.workers,
+        shuffle=False,
+    )
+
+    # ------------
+    # encoder
+    # ------------
     encoder = Architecture(args)
     args.accelerator = 'gpu'
+    n_features = args.encoder_dim
 
-    # model
-    module = ContrastiveLearning(args, encoder)
-    logger = TensorBoardLogger("runs", name="PEMR-{}".format(args.dataset))
-    if args.checkpoint_path:
-        module = module.load_from_checkpoint(
-            args.checkpoint_path, encoder=encoder, output_dim=train_dataset.n_classes
+    state_dict = load_encoder_checkpoint(args.checkpoint_path)
+    encoder.load_state_dict(state_dict)
+    cl = ContrastiveLearning(args, encoder)
+
+    # line evaluation or fine-tuning
+    if args.finetune == 0:
+        cl.eval()
+        cl.freeze()
+        module = LinearEvaluation(
+            args,
+            cl.encoder,
+            hidden_dim=n_features,
+            output_dim=train_dataset.n_classes,
+        )
+    elif args.finetune == 1:
+        module = Finetuner(
+            args,
+            cl.encoder,
+            hidden_dim=n_features,
+            output_dim=train_dataset.n_classes,
         )
 
+    if args.finetuner_checkpoint_path:
+        state_dict = load_finetuner_checkpoint(args.finetuner_checkpoint_path)
+        module.model.load_state_dict(state_dict)
     else:
-        # training
+        early_stop_callback = EarlyStopping(
+            monitor="Valid/loss", patience=10, verbose=False, mode="min"
+        )
+
         trainer = Trainer.from_argparse_args(
             args,
-            logger=logger,
-            sync_batchnorm=True,
-            max_epochs=args.max_epochs,
-            log_every_n_steps=10,
-            check_val_every_n_epoch=1,
-            accelerator=args.accelerator,
+            logger=TensorBoardLogger(
+                "runs", name="PEMR-eval-{}".format(args.dataset)
+            ),
+            max_epochs=args.finetuner_max_epochs,
+            callbacks=[early_stop_callback],
+            accelerator = args.accelerator
         )
         trainer.fit(module, train_loader, valid_loader)
+
+    device = "cuda:0" if args.gpus else "cpu"
+    results = evaluate(
+        args,
+        module.encoder,
+        module.model,
+        contrastive_test_dataset,
+        args.dataset,
+        args.segment_length,
+        device=device,
+    )
+    print(results)
