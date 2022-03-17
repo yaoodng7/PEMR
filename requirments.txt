@@ -1,0 +1,7 @@
+torchaudio-augmentations
+torch==1.9.0
+torchaudio
+pytorch-lightning
+soundfile
+sklearn
+matplotlib
