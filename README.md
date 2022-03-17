@@ -40,15 +40,11 @@ python3 finetuning.py --finetune 1 --checkpoint_path [PATH OF PRE-TRAINED MODEL 
 ```
 
 ## Note
-Pre-training, linear_evaluation and fine-tuning are all need audio .wav files. If you need the .wav files of music, you can contact us through yaodongai@zju.edu.cn.
+Pre-training, linear_evaluation and fine-tuning are all need audio .wav files. We provide the dataset split files of MagnaTagATune and SHS100K. The GTZAN is only for training and the covers80 is only for testing. All audio files of these datasets are too big. If you need the .wav files of music, you can contact us through yaodongai@zju.edu.cn.
 
 ## Pre-trained Model File
 We provide our [pre-trained model](https://github.com/yaoodng7/PEMR/releases/download/pre-trained/pre-trained_model.ckpt) file obtained by pre-training for 300 epochs with 48 batch size. More configuration about this pre-trained model file can be find in https://github.com/yaoodng7/PEMR/releases
   
-
-
-## Detail about dataset folder
-We provide the dataset split files of MagnaTagATune and SHS100K. The GTZAN is only for training and the covers80 is only for testing. All audio files of these datasets are too big. The readers can contact with us for audio files.
 
 ## Acknowledgements
 Our codes are based on the following repositories:
