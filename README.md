@@ -1,8 +1,6 @@
 # Contrastive Learning with Positive-Negative Frame Mask for Music Representation
 
-Dong Yao, Zhou Zhao, Shengyu Zhang, Jieming Zhu,Yudong Zhu, Rui Zhang, Xiuqiang He
-
-WWW2022
+Accepted by WWW2022!
 
 [![arXiv](https://img.shields.io/badge/arXiv-2104.00305-b31b1b.svg)](https://arxiv.org/abs/2104.00305)
 
@@ -18,7 +16,6 @@ The repository is the offical pytorch implementation of our WWW2022 paper.
 ## Quick Start
 ```
 git clone https://github.com/yaoodng7/PEMR.git
-
 pip3 install -r requirements.txt
 ```
 
