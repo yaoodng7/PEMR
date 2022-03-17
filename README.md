@@ -49,3 +49,18 @@ We provide our [pre-trained model](https://github.com/yaoodng7/PEMR/releases/dow
 
 ## Detail about dataset folder
 We provide the dataset split files of MagnaTagATune and SHS100K. The GTZAN is only for training and the covers80 is only for testing. All audio files of these datasets are too big. The readers can contact with us for audio files.
+
+## Acknowledgements
+Our codes are based on the following repositories:
+* [PyTorch Lightning](https://github.com/PyTorchLightning/pytorch-lightning)
+* [CLMR](https://github.com/Spijkervet/CLMR)
+
+## Citation
+```
+@article{Yao2021pemr
+author = {Dong Yao, Zhou Zhao, Shengyu Zhang, Jieming Zhu,Yudong Zhu, Rui Zhang, Xiuqiang He}, 
+keywords = {contrastive learning,contrastive learning adopting positive-negative,representation learning,transformer},
+title = {{Contrastive Learning Adopting Positive-Negative Frame Mask for Music Representation}}
+year = {2021}
+}
+
