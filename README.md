@@ -59,7 +59,7 @@ Our codes are based on the following repositories:
 ```
 @article{Yao2021pemr
 author = {Dong Yao, Zhou Zhao, Shengyu Zhang, Jieming Zhu,Yudong Zhu, Rui Zhang, Xiuqiang He}, 
-keywords = {contrastive learning,contrastive learning adopting positive-negative,representation learning,transformer},
+keywords = {contrastive learning, music representation},
 title = {{Contrastive Learning Adopting Positive-Negative Frame Mask for Music Representation}}
 year = {2021}
 }
