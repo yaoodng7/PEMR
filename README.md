@@ -37,7 +37,7 @@ python3 finetuning.py --finetune 1 --checkpoint_path [PATH OF PRE-TRAINED MODEL 
 ```
   
 ## Pre-trained
-We provide our [pre-trained model](https://github.com/yaoodng7/PEMR/releases/download/pre-trained/pre-trained_model.ckpt) file obtained by pre-training for 300 epochs with 48 batch size.
+We provide our [pre-trained model](https://github.com/yaoodng7/PEMR/releases/pre-trained/pre-trained_model.ckpt) file obtained by pre-training for 300 epochs with 48 batch size.
   
 
 
