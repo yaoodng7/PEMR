@@ -36,6 +36,8 @@ python3 finetuning.py --finetune 0 --checkpoint_path [PATH OF PRE-TRAINED MODEL 
 python3 finetuning.py --finetune 1 --checkpoint_path [PATH OF PRE-TRAINED MODEL FILE]
 ```
   
+## Pre-trained
+We provide our [pre-trained model file]() obtained by pre-training for 300 epochs.
   
 
 
