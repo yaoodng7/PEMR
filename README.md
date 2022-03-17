@@ -16,12 +16,25 @@ The repository is the offical pytorch implementation of our WWW2022 paper.
 </div>
 
 ## Quick Start
-'''
-git clone https://github.com/spijkervet/clmr.git
+```
+git clone https://github.com/yaoodng7/PEMR.git
 
 pip3 install -r requirements.txt
-'''
-  
+```
+
+## Pre-training
+```
+python3 main.py --masked_factor [THE RATIO OF FRAME BEING MASKED] --dataset_dir [DIRECTORY OF PRE-TRAINING DATASET] --batch_size [] ......
+```
+
+## Linear Evaluation
+```
+python3 finetuning.py --finetune 0 --checkpoint_path [PATH OF PRE-TRAINED MODEL FILE]
+```
+## Fine-tuning
+```
+python3 finetuning.py --finetune 1 --checkpoint_path [PATH OF PRE-TRAINED MODEL FILE]
+```
   
   
 
