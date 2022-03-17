@@ -4,16 +4,26 @@ Dong Yao, Zhou Zhao, Shengyu Zhang, Jieming Zhu,Yudong Zhu, Rui Zhang, Xiuqiang 
 
 WWW2022
 
+[![arXiv](https://img.shields.io/badge/arXiv-2104.00305-b31b1b.svg)](https://arxiv.org/abs/2104.00305)
+
 The repository is the offical pytorch implementation of our WWW2022 paper.
 
-## Abstract
-Self-supervised learning, especially contrastive learning, has made an outstanding contribution to the development of many deep learning research fields. Recently, researchers in the acoustic signal processing field noticed its success and leveraged contrastive learn- ing for better music representation. Typically, existing approaches maximize the similarity between two distorted audio segments sampled from the same music. In other words, they ensure a seman- tic agreement at the music level. However, those coarse-grained methods neglect some inessential or noisy elements at the frame level, which may be detrimental to the model to learn the effective representation of music. Towards this end, this paper proposes a novel Positive-nEgative frame mask for Music Representation based on the contrastive learning framework, abbreviated as PEMR. Concretely, PEMR incorporates a Positive-Negative Mask Genera- tion module, which leverages transformer blocks to generate frame masks on Log-Mel spectrogram. We can generate self-augmented negative and positive samples by masking important components or inessential components, respectively. We devise a novel con- trastive learning objective to accommodate both self-augmented positives/negatives sampled from the same music. We conduct experiments on four public datasets. The experimental results of two music-related downstream tasks, music classification and cover song identification, demonstrate the generalization ability and trans- ferability of music representation learned by **PEMR**.
+<div align="center">
+  <img width="100%" alt="PEMR model" src="images/model.JPG?raw=true">
+</div>
+<div align="center">
+  overview of PEMR
+</div>
 
+## Quick Start
+'''
+git clone https://github.com/spijkervet/clmr.git
 
-<img align="center" src="images/model.JPG" style="  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  width: 100%;" /> 
+pip3 install -r requirements.txt
+'''
+  
+  
+  
 
 
 ## Detail about dataset folder
