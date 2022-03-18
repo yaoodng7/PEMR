@@ -1,7 +1,7 @@
 # Contrastive Learning with Positive-Negative Frame Mask for Music Representation
 
 
-[![arXiv](https://img.shields.io/badge/arXiv-2104.00305-b31b1b.svg)](https://arxiv.org/abs/2104.00305)
+[![arXiv](https://img.shields.io/badge/arXiv-2203.09129-b31b1b.svg)](https://arxiv.org/abs/2203.09129)
 
 The repository is the offical pytorch implementation of our WWW2022 paper.
 
